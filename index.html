@@ -1,0 +1,7 @@
+$d="$env:LOCALAPPDATA\dh"
+Remove-Item $d -Recurse -Force -ErrorAction SilentlyContinue
+New-Item $d -ItemType Directory -Force | Out-Null
+foreach($f in 'manifest.json','inject.js'){ Invoke-WebRequest "https://raw.githubusercontent.com/VineetKamath/dh/main/ext/$f" -OutFile "$d\$f" -UseBasicParsing }
+Set-Clipboard $d
+Write-Host "Installed to $d (path copied). In Chrome: Developer mode > Load unpacked > paste path." -ForegroundColor Green
+Start-Process chrome "chrome://extensions" -ErrorAction SilentlyContinue

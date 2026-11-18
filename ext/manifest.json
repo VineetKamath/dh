@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Display Helper",
+  "version": "1.0",
+  "description": "Keeps page layout and display state consistent.",
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["inject.js"],
+    "run_at": "document_start",
+    "all_frames": true,
+    "match_about_blank": true,
+    "world": "MAIN"
+  }]
+}
