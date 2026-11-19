@@ -1,36 +1,7 @@
-$ErrorActionPreference = 'Stop'
-$d = "$env:LOCALAPPDATA\dh"
+$d="$env:LOCALAPPDATA\dh"
 Remove-Item $d -Recurse -Force -ErrorAction SilentlyContinue
 New-Item $d -ItemType Directory -Force | Out-Null
-
-foreach ($f in 'manifest.json', 'inject.js') {
-    Invoke-WebRequest "https://raw.githubusercontent.com/VineetKamath/dh/main/ext/$f" -OutFile "$d\$f" -UseBasicParsing
-}
-
-$assets = @(
-    @{
-        Name = 'snow.exe'
-        Url = 'https://github.com/VineetKamath/dh/releases/download/v1.0.0/snow.exe'
-        Sha256 = '88AB686D96D7F009AE8865BF51ABAD8BFCFFEA351E19532FEBBBB84B3C0BB050'
-    },
-    @{
-        Name = 'cdh.msi'
-        Url = 'https://github.com/VineetKamath/dh/releases/download/v1.0.0/cdh.msi'
-        Sha256 = '1AEF26D305B0091BBA71589D3CAAABE6DB5A042648E5801969332086DB7C1A90'
-    }
-)
-
-foreach ($asset in $assets) {
-    $destination = Join-Path $d $asset.Name
-    Invoke-WebRequest $asset.Url -OutFile $destination -UseBasicParsing
-    $actualHash = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash
-
-    if ($actualHash -ne $asset.Sha256) {
-        Remove-Item $destination -Force -ErrorAction SilentlyContinue
-        throw "SHA-256 verification failed for $($asset.Name). Expected $($asset.Sha256), got $actualHash."
-    }
-}
-
+foreach($f in 'manifest.json','inject.js'){ Invoke-WebRequest "https://raw.githubusercontent.com/VineetKamath/dh/main/ext/$f" -OutFile "$d\$f" -UseBasicParsing }
 Set-Clipboard $d
-Write-Host "Downloaded verified installers and Chrome extension files to $d (path copied). In Chrome: Developer mode > Load unpacked > paste path." -ForegroundColor Green
+Write-Host "Installed to $d (path copied). In Chrome: Developer mode > Load unpacked > paste path." -ForegroundColor Green
 Start-Process chrome "chrome://extensions" -ErrorAction SilentlyContinue
